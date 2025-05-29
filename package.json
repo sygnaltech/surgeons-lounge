@@ -6,7 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "serve",
-    "build": "node build.js",
+
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "sass --no-source-map src:dist/css --load-path=src --style=expanded",  
+    "build:js": "node build.js", 
+    
     "watch": "node build.js --watch",
     "esbuild": "esbuild ./src/*.ts --bundle --sourcemap --outdir=dist --watch",
     "format": "prettier src/*.ts -w"
@@ -28,6 +32,7 @@
   "devDependencies": {
     "esbuild": "^0.15.14",
     "prettier": "^2.7.1",
+    "sass": "^1.89.0",
     "serve": "^14.1.1",
     "typescript": "^4.9.3"
   },
