@@ -15,6 +15,7 @@ import { routeDispatcher } from "./routes";
 import { initSSE } from "@sygnal/sse"; 
 import { ComponentManager } from "./engine/component-manager";
 import { TestComponent } from "./components/test";
+import { FlashcardComponent } from "./components/flashcard";
 
 interface SiteGlobalDataType {
     // Define properties and their types for SiteDataType
@@ -89,6 +90,11 @@ const exec = () => {
                 case 'test':
  
                     (new TestComponent(element)).exec();
+
+                    break;
+                case 'flashcard':
+ 
+                    (new FlashcardComponent(element)).exec();
 
                     break;
                 default:
