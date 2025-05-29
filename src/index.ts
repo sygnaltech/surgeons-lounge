@@ -15,6 +15,8 @@ import { routeDispatcher } from "./routes";
 import { initSSE } from "@sygnal/sse"; 
 import { ComponentManager } from "./engine/component-manager";
 import { TestComponent } from "./components/test";
+import { FlashcardComponent } from "./components/flashcard";
+import { FlashcardDeckComponent } from "./components/deck";
 
 interface SiteGlobalDataType {
     // Define properties and their types for SiteDataType
@@ -91,6 +93,16 @@ const exec = () => {
                     (new TestComponent(element)).exec();
 
                     break;
+                case 'flashcard':
+ 
+                    (new FlashcardComponent(element)).exec();
+
+                    break;
+                case 'deck':
+ 
+                    (new FlashcardDeckComponent(element)).exec();
+
+                    break;
                 default:
                     console.log('Unknown component:', componentValue);
                     break;
@@ -112,4 +124,7 @@ if (document.readyState !== 'loading') {
     exec();
 } else {
     document.addEventListener("DOMContentLoaded", exec);
-}
+} 
+
+
+
