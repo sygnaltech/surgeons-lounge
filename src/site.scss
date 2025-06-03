@@ -1,9 +1,7 @@
 
 
-[sse-component=flashcard] {
+@use './components/flashcard';
 
-    .w-tab-menu {
-        display: none; 
-    }
-  
-}
+
+
+ 

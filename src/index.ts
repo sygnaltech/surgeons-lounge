@@ -95,7 +95,7 @@ const exec = () => {
                     break;
                 case 'flashcard':
  
-                    (new FlashcardComponent(element)).exec();
+//                    (new FlashcardComponent(element)).exec();
 
                     break;
                 case 'deck':

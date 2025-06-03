@@ -37,17 +37,23 @@ export class FlashcardComponent implements IModule {
   exec() {
 
     const sa5: any = window['sa5' as any];
+
     const actions = this.elem.querySelectorAll<HTMLElement>('[card-action]');
+
+    // // Hide it 
+    // this.elem.style.display = "none";
 
     actions.forEach(actionElem => {
       const action = actionElem.getAttribute('card-action');
 
       if (!action) return;
 
+
+
       actionElem.addEventListener('click', (e) => {
         switch (action) {
-          case 'pref':
-            this.handlePref();
+          case 'prev':
+            this.handlePrev();
             break;
           case 'next':
             this.handleNext();
@@ -60,17 +66,40 @@ export class FlashcardComponent implements IModule {
         }
       });
     }); 
-    
+
+
   }
 
-  handlePref(): void {
+  handlePrev(): void {
     console.log('Previous card');
     // your logic here
+
+
+    // Emit custom event
+    this.elem.dispatchEvent(new CustomEvent("flashcard:prev", {
+      bubbles: true, // so it can bubble up to the deck
+      detail: {
+        card: this
+      }
+    }));
+
+
+
   }
 
   handleNext(): void {
     console.log('Next card');
     // your logic here
+
+    // Emit custom event
+    this.elem.dispatchEvent(new CustomEvent("flashcard:next", {
+      bubbles: true, // so it can bubble up to the deck
+      detail: {
+        card: this
+      }
+    }));
+
+
   }
 
   handleFlip(): void {

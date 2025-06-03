@@ -1,0 +1,21 @@
+[sse-component=deck] {
+
+    position: relative;
+
+}
+
+[sse-component=flashcard] {
+
+    .w-tab-menu {
+        display: none; 
+    }
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+//     display: none;
+
+}
+
+
