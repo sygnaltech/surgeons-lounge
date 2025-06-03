@@ -1,7 +1,9 @@
 
 /*
- * Component | Test 
+ * Component | Flashcard 
+ *
  */
+
 
 import { IModule } from "@sygnal/sse";
 
@@ -14,7 +16,6 @@ export class FlashcardComponent implements IModule {
     const front = this.elem.querySelector<HTMLElement>('[component-part="front"]');
     return front?.classList.contains('w--current') ?? false;
   }
-
   set isFront(value: boolean) {
     if (value) {
       this.clickPart('front');
@@ -48,8 +49,6 @@ export class FlashcardComponent implements IModule {
 
       if (!action) return;
 
-
-
       actionElem.addEventListener('click', (e) => {
         switch (action) {
           case 'prev':
@@ -67,13 +66,9 @@ export class FlashcardComponent implements IModule {
       });
     }); 
 
-
   }
 
   handlePrev(): void {
-    console.log('Previous card');
-    // your logic here
-
 
     // Emit custom event
     this.elem.dispatchEvent(new CustomEvent("flashcard:prev", {
@@ -83,13 +78,9 @@ export class FlashcardComponent implements IModule {
       }
     }));
 
-
-
   }
 
   handleNext(): void {
-    console.log('Next card');
-    // your logic here
 
     // Emit custom event
     this.elem.dispatchEvent(new CustomEvent("flashcard:next", {
@@ -99,24 +90,23 @@ export class FlashcardComponent implements IModule {
       }
     }));
 
-
   }
 
-  handleFlip(): void {
-    console.log('Flip card', this.isFront); 
-    // your logic here
+  handleFlip(): void { 
 
     this.isFront ? this.isFront=false: this.isFront = true; 
 
   }
 
-clickPart(name: string): void {
-  const part = this.elem.querySelector<HTMLElement>(`[component-part="${name}"]`);
-  if (part) {
-    part.click();
-  } else {
-    console.warn(`No element found with component-part="${name}"`);
+  clickPart(name: string): void { 
+
+    const part = this.elem.querySelector<HTMLElement>(`[component-part="${name}"]`);
+    if (part) {
+      part.click();
+    } else {
+      console.warn(`No element found with component-part="${name}"`);
+    } 
+
   }
-}
 
 }
