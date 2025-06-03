@@ -1,6 +1,6 @@
 
 /*
- * Page | Flashcard
+ * Page | Flashcard Setup 
  */
 
 import { IModule } from "@sygnal/sse";
@@ -17,7 +17,7 @@ export class FlashcardPage implements IModule {
 
   exec() {
 
-    console.log("Flashcards")
+    console.log("Flashcard Setup")
 
   } 
 
