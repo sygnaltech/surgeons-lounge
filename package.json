@@ -6,11 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "serve",
-
     "build": "npm run build:css && npm run build:js",
-    "build:css": "sass --no-source-map src:dist/css --load-path=src --style=expanded",  
-    "build:js": "node build.js", 
-    
+    "build:css": "sass --no-source-map src:dist/css --load-path=src --style=expanded",
+    "build:js": "node build.js",
     "watch": "node build.js --watch",
     "esbuild": "esbuild ./src/*.ts --bundle --sourcemap --outdir=dist --watch",
     "format": "prettier src/*.ts -w"
@@ -37,6 +35,7 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "@memberstack/dom": "^1.9.40",
     "@sygnal/sse": "^0.2.0",
     "glob": "^10.4.2",
     "gsap": "^3.12.5",

@@ -9,7 +9,24 @@ import { IModule } from "@sygnal/sse";
 import { HtmlUtils } from "../utils/html";
 import { FlashcardComponent } from "./flashcard";
 
-// Get config from querystring
+
+import memberstackDOM from "@memberstack/dom";
+
+
+const memberstack = memberstackDOM.init(
+  {
+    publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
+    useCookies: true  
+  }
+); 
+
+
+
+
+
+
+// Get config from querystring 
+// TODO: reconsider how to make this non-constant   
 export const FlashcardTopics = [
   "adult-medicine-anesthesia",
   "dentoalveolar",
@@ -31,6 +48,8 @@ export class FlashcardDeckComponent implements IModule {
   private topics: string[] = [];
 
   cards: FlashcardComponent[] = []; 
+
+  completedCardNum: number = 0;
 
   _cardNum: number = 1; 
   get cardNum(): number {
@@ -60,7 +79,47 @@ export class FlashcardDeckComponent implements IModule {
         
   }
   
-  exec() {
+  member: any; 
+  memberJson: any;  
+
+  async exec() {
+
+
+
+    console.log("Flashcard Deck")
+
+    this.member = await memberstack.getCurrentMember();
+
+    if (this.member) { 
+
+      // Get member JSON 
+      this.memberJson = await memberstack.getMemberJSON(); 
+      console.log("memberJson", this.memberJson); 
+
+    } else {
+        console.error("No User logged in:");
+    }
+
+
+
+    // Access data 
+    // console.log(json.userName); 
+    // console.log(json.avatarURL);
+
+    // console.log(json); 
+
+//    json = null;
+
+// json = { 
+//   test: "foo",
+//   cards: {
+//     "123": "medium",
+//     "458": "easy",
+//   }
+// }
+
+
+
 
     const sa5: any = window['sa5' as any];
 
@@ -111,9 +170,64 @@ export class FlashcardDeckComponent implements IModule {
     });
 
 
-
+    // Show 1st card 
     this.showCard(1); 
 
+
+    /**
+     * Init event listeners 
+     */
+
+  this.elem.addEventListener("flashcard:answer", async (e: Event) => {
+    const customEvent = e as CustomEvent<{ card: FlashcardComponent, freq: string }>;
+    const card = customEvent.detail.card;
+    const freq = customEvent.detail.freq; 
+    
+    console.log("Card answer:", card, freq);
+
+    // update count complete 
+    if(this.completedCardNum < this.cardNum)
+      this.completedCardNum = this.cardNum; 
+
+    let date: Date = new Date(); // current time
+
+    switch (freq) {
+      case "low":
+        date.setHours(date.getHours() + 24); // add 1 day
+        break;
+
+      case "medium":
+        date.setHours(date.getHours() + 12); // add 12 hours
+        break;
+
+      case "high":
+        // no change
+        break;
+    }
+
+    // save freq and timestamp
+    // Ensure the structure exists
+
+//     this.memberJson.data ??= {};
+// this.memberJson.data.z = date.toISOString(); 
+
+    this.memberJson.cards ??= {};
+    this.memberJson.cards[card.id] ??= {};
+
+    this.memberJson.cards[card.id].freq = freq;
+    this.memberJson.cards[card.id].date = date.toISOString(); // or just `date` if you're storing as Date
+
+console.log("Saving", this.memberJson); 
+
+    await memberstack.updateMemberJSON({json: this.memberJson});
+
+    // flip to front 
+    card.isFront = true; 
+
+    // advance
+    this.onCardNext(card); 
+
+  });
 
   this.elem.addEventListener("flashcard:prev", (e: Event) => {
     const customEvent = e as CustomEvent<{ card: FlashcardComponent }>;
