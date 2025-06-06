@@ -44,6 +44,18 @@ export class User {
 
     }
 
+    async clearData() {
+
+        this.data = {};
+        this.saveData(); 
+        
+        console.log(
+            '%cUSER DATA CLEARED',
+            'color: red; background: yellow; font-weight: bold; font-size: 16px; padding: 2px 6px;'
+        );
+
+    }
+
 
 }
 
