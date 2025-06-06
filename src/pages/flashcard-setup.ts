@@ -6,6 +6,7 @@
 import { IModule } from "@sygnal/sse";
 
 import memberstackDOM from "@memberstack/dom";
+import { User } from "../utils/user";
 
 
 const memberstack = memberstackDOM.init(
@@ -22,6 +23,8 @@ const memberstack = memberstackDOM.init(
 
 export class FlashcardPage implements IModule {
 
+  user!: User; 
+
   constructor() {
   }
 
@@ -33,35 +36,62 @@ export class FlashcardPage implements IModule {
 
     console.log("Flashcard Setup")
 
-    const member = await memberstack.getCurrentMember();
+    this.user = await User.create();
 
-    if (member) {
-        console.log("User is logged in:", member);
+    if (this.user.loggedIn) { 
 
       this.enableFlashcards(); 
 
-
     } else {
-      console.log("XX No user is logged in");
-
-
-
+      console.log("No user is logged in");
+      return; 
     }
+
+
+    // Setup validation on checkboxes 
+    const form = document.querySelector('form#setup-form');
+    const categoryFieldset = document.getElementById('categorys') as HTMLFieldSetElement;
+
+    if(!form)
+      console.error("cannot find form.")
+
+    form?.addEventListener('submit', (e) => {
+      const checkboxes = categoryFieldset.querySelectorAll('input[type="checkbox"]');
+      const oneChecked = Array.from(checkboxes).some(cb => (cb as HTMLInputElement).checked);
+
+      if (!oneChecked) {
+        e.preventDefault();
+        alert('Please select at least one category.');
+      }
+    });
+
+
+
+    // Setup Clear button 
+    const btn = document.getElementById('btn-clear-data');
+    btn?.addEventListener('click', () => {
+      if (confirm('Are you sure?')) {
+        console.log('User confirmed clear data');
+
+        this.user.clearData(); 
+
+      }
+    });
 
 
 
   } 
 
-enableFlashcards() {
-  const fieldset = document.getElementById("deck-setup") as HTMLFieldSetElement | null;
+  enableFlashcards() {
+    const fieldset = document.getElementById("deck-setup") as HTMLFieldSetElement | null;
 
-  if (fieldset) {
-    fieldset.disabled = false;
-    console.log("Flashcards enabled.");
-  } else {
-    console.warn("fieldset#deck-setup not found.");
+    if (fieldset) {
+      fieldset.disabled = false;
+      console.log("Flashcards enabled.");
+    } else {
+      console.warn("fieldset#deck-setup not found.");
+    }
   }
-}
 
 
 
