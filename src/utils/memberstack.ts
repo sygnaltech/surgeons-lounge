@@ -8,12 +8,12 @@
 import memberstackDOM from "@memberstack/dom";
 
 
-const memberstack = memberstackDOM.init(
-  {
-    publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
-    useCookies: true  
-  }
-); 
+// const memberstack = memberstackDOM.init(
+//   {
+//     publicKey: "pk_4c3139f988f49cf84e09",
+//     useCookies: true  
+//   }
+// ); 
 
 
 
@@ -25,7 +25,7 @@ export class MemberStack {
 
         this.memberstack = memberstackDOM.init(
             {
-                publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
+                publicKey: "pk_4c3139f988f49cf84e09",
                 useCookies: true  
             }
         );         

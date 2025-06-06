@@ -170,29 +170,64 @@ export class FlashcardDeckComponent implements IModule {
     // Remove elements whose [app-card-category] is not in this.topics
     const children = Array.from(this.elem.children) as HTMLElement[];
 
+    console.log("STARTING CARDS", this.elem.children.length); 
+
     children.forEach(child => {
 
 // console.log(child)
 
       const card = new FlashcardComponent(child);
 
+      console.log("CARD", card.id, card.category)
+
       // Check category 
       const category = card.category; // child.getAttribute("app-card-category");
-
+      
       if(!category) {
-        console.error("Card does not have app-card-category"); 
+        console.error("  Card does not have app-card-category"); 
         child.remove(); // remove if not matching
         return;
       }
       if (!this.topics.includes(category)) {
-//        console.log("removing, not in a matching categroy", category)
+        console.log("  removing (category mismatch)")
         child.remove(); // remove if not matching
         return;
       }
 
       // Check timestamp 
       const d = this.user?.data?.cards?.[card.id]?.d;
-      console.log("HISTORY", card.id, d);
+
+      if (typeof d === 'number') {
+        const now = Date.now(); // current timestamp in ms
+        let diffMs = d - now;   // future time
+
+        if (diffMs < 0) {
+//          console.log("HISTORY", card.id, "Time has passed");
+        } else {
+          const minutes = Math.floor(diffMs / 60000) % 60;
+          const hours = Math.floor(diffMs / 3600000) % 24;
+          const days = Math.floor(diffMs / 86400000);
+
+          const parts = [];
+          if (days) parts.push(`${days}d`);
+          if (hours) parts.push(`${hours}h`);
+          if (minutes || (!days && !hours)) parts.push(`${minutes}m`);
+
+      //    console.log("HISTORY", card.id, parts.join(' '));
+
+          if(d > now) {
+              console.log("  removing, not ready for", parts.join(' '))
+              child.remove(); // remove if not matching
+              return;
+          }
+
+        }
+      } else {
+//        console.log("HISTORY", card.id, "Invalid or missing timestamp");
+      }
+
+
+      console.log("  KEEP"); 
 
 
       // if (category && this.topics.includes(category)) {
@@ -215,7 +250,7 @@ export class FlashcardDeckComponent implements IModule {
     });
 
 
-
+    console.log("FINISHING CARDS", this.elem.children.length); 
 
 
     // Show 1st card 
