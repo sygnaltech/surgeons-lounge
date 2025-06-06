@@ -29,9 +29,23 @@ export class FlashcardDeckPage implements IModule {
 
     console.log("Flashcard Deck")
 
+    /**
+     * Install Deck Settings button 
+     */
+
+    const btn = document.getElementById('deck-settings');
+    btn?.addEventListener('click', (e) => {
+      e.preventDefault(); // Stop the default navigation
+
+      if (confirm('Leaving this view will restart your deck, are you sure?')) {
+        const href = (btn as HTMLAnchorElement).href;
+        window.location.href = href; // Manually navigate
+      }
+    });
+
+
     // Get User info (pause) 
     this.user = await User.create();
-
 
 //    const member = await this.memberstack.getCurrentMember();
 
@@ -59,47 +73,6 @@ export class FlashcardDeckPage implements IModule {
     }
 
     this.deck = new FlashcardDeckComponent(element);
-
-
-    this.initDeck(); 
-
-  } 
-
-  initDeck() {
-
-
-
-  console.log("initDeck");  
-    // Get config from querystring
- 
-
-//     // Parse query params from current URL
-//     const params = new URLSearchParams(window.location.search);
-
-//     // Check each topic
-//     FlashcardTopics.forEach(topic => {
-//       if (params.get(topic) === "on") {
-// //        console.log(`Enabled: ${topic}`);
-//         this.deck.addTopic(topic); 
-//       }
-//     });
-
-//     this.deck.initDeck(); 
-
-    // Remove unnecessary cards 
-
-    // Randomize 
-
-    // Reset and save localStorage 
-
-    /**
-     * Setup card 
-     */
-
-    // [card-action=flip] 
-    // [card-action=next] 
-    // [card-action=prev] 
-
 
   }
 
