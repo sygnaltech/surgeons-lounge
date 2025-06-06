@@ -8,13 +8,6 @@
 import memberstackDOM from "@memberstack/dom";
 
 
-// const memberstack = memberstackDOM.init(
-//   {
-//     publicKey: "pk_4c3139f988f49cf84e09",
-//     useCookies: true  
-//   }
-// ); 
-
 
 
 export class MemberStack {
@@ -40,16 +33,14 @@ export class MemberStack {
 
     async getMemberJSON(): Promise<any> {
 
-//        return this.memberstack.getMemberJSON(); 
         const result = await this.memberstack.getMemberJSON();
         return result?.data;
+        
     }
 
     async updateMemberJSON(data: any) {
 
-//        this.memberstack.updateMemberJSON({json: data});
         this.memberstack.updateMemberJSON({json: data});
-
 
     }
 
