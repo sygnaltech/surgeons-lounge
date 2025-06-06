@@ -1,60 +1,48 @@
-
-
-/**
- * Memberstack interface. 
- * 
- */
-
-import memberstackDOM from "@memberstack/dom";
-
-
-const memberstack = memberstackDOM.init(
-  {
-    publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
-    useCookies: true  
-  }
-); 
+import { MemberStack } from "./memberstack";
 
 
 
-export class MemberStack {
 
-    memberstack: any; 
 
-    constructor() {
 
-        this.memberstack = memberstackDOM.init(
-            {
-                publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
-                useCookies: true  
-            }
-        );         
+export class User {
 
+    memberstack: MemberStack; 
+    _user: any;
+    data: any = {}; 
+
+    get user(): any {
+        return this._user; 
     }
 
-    async getCurrentMember(): Promise<any> {
-
-        return this.memberstack.getCurrentMember();  
-
+    get loggedIn(): boolean {
+        return !!this._user;
     }
 
-    async getMemberJSON(): Promise<any> {
-
-//        return this.memberstack.getMemberJSON(); 
-        const result = await this.memberstack.getMemberJSON();
-        return result?.data;
+    private constructor(memberstack: MemberStack, user: any) {
+        this.memberstack = memberstack;
+        this._user = user;
     }
 
-    async updateMemberJSON(data: any) {
-
-//        this.memberstack.updateMemberJSON({json: data});
-        this.memberstack.updateMemberJSON({json: data});
-
-
+    static async create(): Promise<User> {
+        const memberstack = new MemberStack();
+        const user = await memberstack.getCurrentMember();
+        return new User(memberstack, user);
     }
 
 
+    async loadData() {
 
+        this.data = await this.memberstack.getMemberJSON(); 
+
+    }
+
+    async saveData() {
+
+//        await this.memberstack.updateMemberJSON({json: data});
+        await this.memberstack.updateMemberJSON(this.data);
+
+    }
 
 
 }

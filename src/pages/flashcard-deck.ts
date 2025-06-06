@@ -5,15 +5,8 @@
 
 import { IModule } from "@sygnal/sse";
 import { FlashcardDeckComponent, FlashcardTopics } from "../components/deck";
-import memberstackDOM from "@memberstack/dom";
-
-
-const memberstack = memberstackDOM.init(
-  {
-    publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
-    useCookies: true  
-  }
-);
+import { MemberStack } from "../utils/memberstack";
+import { User } from "../utils/user";
 
 // Entry 
 // https://surgeonslounge.webflow.io/deck?dentoalveolar=on&focused-additional-short-topics-fast=on&implants=on  
@@ -22,8 +15,10 @@ const memberstack = memberstackDOM.init(
 export class FlashcardDeckPage implements IModule {
 
   deck!: FlashcardDeckComponent; 
+  user!: User; 
 
   constructor() {
+
   }
 
   setup() {
@@ -34,37 +29,24 @@ export class FlashcardDeckPage implements IModule {
 
     console.log("Flashcard Deck")
 
-    const member = await memberstack.getCurrentMember();
-
-    if (member) {
-        console.log("User is logged in:", member);
+    // Get User info (pause) 
+    this.user = await User.create();
 
 
-    // Get member JSON 
-    let json: any = await memberstack.getMemberJSON(); 
+//    const member = await this.memberstack.getCurrentMember();
 
-    // Access data 
-    console.log(json.userName); 
-    console.log(json.avatarURL);
+    if (this.user.loggedIn) {
+        console.log("User is logged in:", this.user.user);
 
-    console.log(json); 
-
-    json = null;
-
-// json = { 
-//   test: "foo",
-//   cards: {
-//     "123": "medium",
-//     "458": "easy",
-//   }
-// }
-
-await memberstack.updateMemberJSON({json});
-
+        // Access data 
+        console.log(this.user.user.userName); 
+        console.log(this.user.user.avatarURL);
 
     } else {
 
       console.log("No user is logged in");
+
+      // TODO: redirect? 
 
     }
 
@@ -87,7 +69,7 @@ await memberstack.updateMemberJSON({json});
 
 
 
-console.log("initDeck"); 
+  console.log("initDeck");  
     // Get config from querystring
  
 

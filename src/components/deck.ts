@@ -8,17 +8,19 @@
 import { IModule } from "@sygnal/sse";
 import { HtmlUtils } from "../utils/html";
 import { FlashcardComponent } from "./flashcard";
+import { User } from "../utils/user";
+// import { MemberStack } from "../utils/memberstack";
 
 
-import memberstackDOM from "@memberstack/dom";
+// import memberstackDOM from "@memberstack/dom";
 
 
-const memberstack = memberstackDOM.init(
-  {
-    publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
-    useCookies: true  
-  }
-); 
+// const memberstack = memberstackDOM.init(
+//   {
+//     publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
+//     useCookies: true  
+//   }
+// ); 
 
 
 
@@ -43,6 +45,11 @@ export const FlashcardTopics = [
 ];
 
 export class FlashcardDeckComponent implements IModule {
+
+
+  user!: User; 
+//  memberstack: MemberStack = new MemberStack(); 
+
 
   elem: HTMLElement;
   private topics: string[] = [];
@@ -79,8 +86,8 @@ export class FlashcardDeckComponent implements IModule {
         
   }
   
-  member: any; 
-  memberJson: any;  
+  // member: any; 
+  // memberJson: any;  
 
   async exec() {
 
@@ -88,13 +95,18 @@ export class FlashcardDeckComponent implements IModule {
 
     console.log("Flashcard Deck")
 
-    this.member = await memberstack.getCurrentMember();
+    this.user = await User.create();
 
-    if (this.member) { 
+//    this.member = await this.memberstack.getCurrentMember();
+
+    if (this.user.loggedIn) { 
 
       // Get member JSON 
-      this.memberJson = await memberstack.getMemberJSON(); 
-      console.log("memberJson", this.memberJson); 
+      await this.user.loadData(); 
+
+
+//      this.memberJson = await this.memberstack.getMemberJSON(); 
+      console.log("memberJson", JSON.stringify(this.user.data, null, 2)); 
 
     } else {
         console.error("No User logged in:");
@@ -110,6 +122,8 @@ export class FlashcardDeckComponent implements IModule {
 
 //    json = null;
 
+// this.user.data = {};
+// this.user.saveData();
 // json = { 
 //   test: "foo",
 //   cards: {
@@ -149,25 +163,59 @@ export class FlashcardDeckComponent implements IModule {
     HtmlUtils.randomSort(this.elem);
 
 
-
+  // this.user.data = {};
+  // this.user.saveData();
 
     // Iterate through the children of this.elem
     // Remove elements whose [app-card-category] is not in this.topics
     const children = Array.from(this.elem.children) as HTMLElement[];
 
     children.forEach(child => {
-      const category = child.getAttribute("app-card-category");
 
-      if (category && this.topics.includes(category)) {
-        const card = new FlashcardComponent(child);
-        
-        this.cards.push(card);
+// console.log(child)
 
-        card.exec(); // init 
-      } else {
+      const card = new FlashcardComponent(child);
+
+      // Check category 
+      const category = card.category; // child.getAttribute("app-card-category");
+
+      if(!category) {
+        console.error("Card does not have app-card-category"); 
         child.remove(); // remove if not matching
+        return;
       }
+      if (!this.topics.includes(category)) {
+//        console.log("removing, not in a matching categroy", category)
+        child.remove(); // remove if not matching
+        return;
+      }
+
+      // Check timestamp 
+      const d = this.user?.data?.cards?.[card.id]?.d;
+      console.log("HISTORY", card.id, d);
+
+
+      // if (category && this.topics.includes(category)) {
+      //   const card = new FlashcardComponent(child);
+        
+      //   this.cards.push(card);
+
+      //   card.exec(); // init 
+      // } else {
+      //   child.remove(); // remove if not matching
+      // }
+
+      // Add card 
+      this.cards.push(card);
+      card.exec(); // init 
+
+
+      
+
     });
+
+
+
 
 
     // Show 1st card 
@@ -178,88 +226,110 @@ export class FlashcardDeckComponent implements IModule {
      * Init event listeners 
      */
 
-  this.elem.addEventListener("flashcard:answer", async (e: Event) => {
-    const customEvent = e as CustomEvent<{ card: FlashcardComponent, freq: string }>;
-    const card = customEvent.detail.card;
-    const freq = customEvent.detail.freq; 
-    
-    console.log("Card answer:", card, freq);
+    this.elem.addEventListener("flashcard:answer", async (e: Event) => {
+      const customEvent = e as CustomEvent<{ card: FlashcardComponent, freq: string }>;
+      const card = customEvent.detail.card;
 
-    // update count complete 
-    if(this.completedCardNum < this.cardNum)
-      this.completedCardNum = this.cardNum; 
 
-    let date: Date = new Date(); // current time
+      console.log("Card answer:", card, customEvent.detail.freq);
 
-    switch (freq) {
-      case "low":
-        date.setHours(date.getHours() + 24); // add 1 day
-        break;
+      // update count complete 
+      if(this.completedCardNum < this.cardNum)
+        this.completedCardNum = this.cardNum; 
 
-      case "medium":
-        date.setHours(date.getHours() + 12); // add 12 hours
-        break;
+      let date: Date = new Date(); // current time
+      let freq: string = "h"; 
 
-      case "high":
-        // no change
-        break;
-    }
+      switch (customEvent.detail.freq) {
+        case "low":
+          freq = "l"; 
+          date.setHours(date.getHours() + 24); // add 1 day
+          break;
 
-    // save freq and timestamp
-    // Ensure the structure exists
+        case "medium":
+          freq = "m"; 
+          date.setHours(date.getHours() + 12); // add 12 hours
+          break;
 
-//     this.memberJson.data ??= {};
-// this.memberJson.data.z = date.toISOString(); 
+        case "high":
+          freq = "h"; 
+          // no change
+          break;
+      }
 
-    this.memberJson.cards ??= {};
-    this.memberJson.cards[card.id] ??= {};
+      // save freq and timestamp
+      // Ensure the structure exists
 
-    this.memberJson.cards[card.id].freq = freq;
-    this.memberJson.cards[card.id].date = date.toISOString(); // or just `date` if you're storing as Date
+  //     this.memberJson.data ??= {};
+  // this.memberJson.data.z = date.toISOString(); 
 
-console.log("Saving", this.memberJson); 
+      console.log("PRE-SAVE", JSON.stringify(this.user.data));
 
-    await memberstack.updateMemberJSON({json: this.memberJson});
+      this.user.data.v = 1; // version 1
+      this.user.data.cards ??= {};
+      this.user.data.cards[card.id] ??= {};
 
-    // flip to front 
-    card.isFront = true; 
+      this.user.data.cards[card.id].f = freq;
+      this.user.data.cards[card.id].d = date.getTime(); // .toISOString(); // or just `date` if you're storing as Date 
 
-    // advance
-    this.onCardNext(card); 
+  // Or switch to 
+  // {
+  //   "c": {
+  //     "a": ["h", 1749112800000],
+  //     "b": ["m", 1749050000000]
+  //   }
+  // }
 
-  });
+      console.log("Saving", JSON.stringify(this.user.data)); 
 
-  this.elem.addEventListener("flashcard:prev", (e: Event) => {
-    const customEvent = e as CustomEvent<{ card: FlashcardComponent }>;
-    const card = customEvent.detail.card;
-    
-    console.log("Card prev:", card);
-    this.onCardPrev(card);
-  });
 
-  this.elem.addEventListener("flashcard:next", (e: Event) => {
-    const customEvent = e as CustomEvent<{ card: FlashcardComponent }>;
-    const card = customEvent.detail.card;
-    
-    console.log("Card next:", card);
-    this.onCardNext(card);
-  });
+      
+      // Save data 
+//      await 
+//      this.user.data = this.user.
+      await this.user.saveData();
+
+
+
+      // flip to front 
+      card.isFront = true; 
+
+      // advance
+      this.onCardNext(card); 
+
+    });
+
+    this.elem.addEventListener("flashcard:prev", (e: Event) => {
+      const customEvent = e as CustomEvent<{ card: FlashcardComponent }>;
+      const card = customEvent.detail.card;
+      
+      console.log("Card prev:", card);
+      this.onCardPrev(card);
+    });
+
+    this.elem.addEventListener("flashcard:next", (e: Event) => {
+      const customEvent = e as CustomEvent<{ card: FlashcardComponent }>;
+      const card = customEvent.detail.card;
+      
+      console.log("Card next:", card);
+      this.onCardNext(card);
+    });
 
 
 
   }
 
 
-private onCardPrev(card: FlashcardComponent) {
-  // Deck-level logic goes here
-  this.cardNum--; 
-}
+  private onCardPrev(card: FlashcardComponent) {
+    // Deck-level logic goes here
+    this.cardNum--; 
+  }
 
 
-private onCardNext(card: FlashcardComponent) {
-  // Deck-level logic goes here
-  this.cardNum++; 
-}
+  private onCardNext(card: FlashcardComponent) {
+    // Deck-level logic goes here
+    this.cardNum++; 
+  }
 
 
   showCard(num: number) {

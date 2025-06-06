@@ -13,6 +13,7 @@ export class FlashcardComponent implements IModule {
   elem: HTMLElement;
 
   id: string = "";
+  category: string = "";
 
   get isFront(): boolean {
     const front = this.elem.querySelector<HTMLElement>('[component-part="front"]');
@@ -29,8 +30,11 @@ export class FlashcardComponent implements IModule {
 
 
   constructor(elem: HTMLElement) {
+
     this.elem = elem; 
     this.id = this.elem.getAttribute("app-card-id") || "";
+    this.category = this.elem.getAttribute("app-card-category") || "";
+
   }
 
   setup() {
