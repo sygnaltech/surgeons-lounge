@@ -72,8 +72,26 @@ export class FlashcardDeckPage implements IModule {
       return;
     }
 
-    this.deck = new FlashcardDeckComponent(element);
+//    this.deck = new FlashcardDeckComponent(element);
+    this.deck = new FlashcardDeckComponent(element, (name, value) => {
+      this.setStats(name, value);
+    });
+    this.deck.exec(); 
 
+    // this.setStats("total", "20");
+    // this.setStats("remain", "40"); 
+
+  }
+
+  setStats(name: string, value: string) {
+
+console.log("UPDATING STAT", name, value) 
+
+    // find text element with [app-stat=(name)] 
+    // set innerText to value 
+    document.querySelectorAll(`[app-stat="${name}"]`).forEach(elem => {
+      elem.textContent = value;
+    });
   }
 
 }

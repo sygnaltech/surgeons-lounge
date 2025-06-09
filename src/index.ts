@@ -108,7 +108,7 @@ const exec = () => {
                     break;
                 case 'deck':
  
-                    (new FlashcardDeckComponent(element)).exec();
+//                    (new FlashcardDeckComponent(element)).exec();
 
                     break;
                 default:

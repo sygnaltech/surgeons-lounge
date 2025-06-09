@@ -44,8 +44,14 @@ export const FlashcardTopics = [
   "trauma"
 ];
 
-export class FlashcardDeckComponent implements IModule {
 
+
+type StatUpdateHandler = (name: string, value: string) => void; 
+
+
+
+export class FlashcardDeckComponent implements IModule {
+  private statHandler?: StatUpdateHandler; 
 
   user!: User; 
 //  memberstack: MemberStack = new MemberStack(); 
@@ -77,9 +83,11 @@ export class FlashcardDeckComponent implements IModule {
     return this.cards.length; 
   }
 
-  constructor(elem: HTMLElement) {
+  constructor(elem: HTMLElement, statHandler?: StatUpdateHandler) {
     this.elem = elem; 
+    this.statHandler = statHandler;
 
+    console.log("saving stat handler", statHandler)
   }
 
   setup() {
@@ -253,6 +261,10 @@ export class FlashcardDeckComponent implements IModule {
     console.log("FINISHING CARDS", this.elem.children.length); 
 
 
+    this.updateStat("total", this.cards.length.toString()); 
+    this.updateStat("remain", (this.cards.length - this.cardNum + 1).toString()); 
+
+
     // Show 1st card 
     this.showCard(1); 
 
@@ -324,7 +336,8 @@ export class FlashcardDeckComponent implements IModule {
 //      this.user.data = this.user.
       await this.user.saveData();
 
-
+this.updateStat("total", this.cards.length.toString()); 
+this.updateStat("remain", (this.cards.length - this.cardNum + 1).toString()); 
 
       // flip to front 
       card.isFront = true; 
@@ -354,6 +367,12 @@ export class FlashcardDeckComponent implements IModule {
 
   }
 
+  updateStat(name: string, value: string) {
+
+console.log("updating stat", name, value, this.statHandler)
+
+    this.statHandler?.(name, value);
+  }
 
   private onCardPrev(card: FlashcardComponent) {
     // Deck-level logic goes here
