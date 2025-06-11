@@ -39,6 +39,13 @@ export class FlashcardPage implements IModule {
     console.log("Flashcard Setup")
 
 
+const radio = document.querySelector<HTMLInputElement>('input[type="radio"][name="type"][value="all"]');
+if (radio) {
+    radio.checked = true;
+}
+
+
+
     /**
      * User login 
      */
