@@ -7,6 +7,8 @@ import { IModule } from "@sygnal/sse";
 
 import memberstackDOM from "@memberstack/dom";
 import { User } from "../utils/user";
+import { Data } from "../utils/data";
+import { Display } from "../utils/display";
 
 
 const memberstack = memberstackDOM.init(
@@ -35,6 +37,48 @@ export class FlashcardPage implements IModule {
   async exec() {
 
     console.log("Flashcard Setup")
+
+    // Load Data Categories 
+    const dataCategories = new Data("categories"); 
+    console.log("DATA-CATEGORIES", dataCategories) 
+
+    // Load Data Flashcards 
+    const dataFlashcards = new Data("flashcards"); 
+    console.log("DATA-FLASHCARDS", dataFlashcards) 
+
+    // Iterate, 
+    // count cards into categories 
+    dataFlashcards.forEach((key, dataObj, item) => {
+        console.log("Key:", key);
+        console.log("Data:", dataObj);
+
+        // Increment category item count 
+        dataCategories.getByKey(dataObj.category).cards++; 
+
+    });
+
+
+    // Iterate through categories 
+    // Display values 
+
+    const display = new Display();  
+
+    dataCategories.forEach((key, dataObj, item) => {
+        console.log("Key:", key);
+        console.log("Data:", dataObj);
+
+        display.show(key, "total", dataObj.cards); 
+
+    });
+
+
+
+
+
+// display value 
+
+
+
 
     this.user = await User.create();
 
