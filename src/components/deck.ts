@@ -29,25 +29,124 @@ import { User } from "../utils/user";
 
 // Get config from querystring 
 // TODO: reconsider how to make this non-constant   
-export const FlashcardTopics = [
-  "adult-medicine-anesthesia",
-  "dentoalveolar",
-  "emergency-management",
-  "focused-additional-short-topics-fast",
-  "implants",
-  "infection",
-  "orthognathic",
-  "pathology",
-  "pediatric-medicine-anesthesia",
-  "reconstruction",
-  "tmj",
-  "trauma"
-];
+// export const FlashcardTopics = [
+//   "adult-medicine-anesthesia",
+//   "dentoalveolar",
+//   "emergency-management",
+//   "focused-additional-short-topics-fast",
+//   "implants",
+//   "infection",
+//   "orthognathic",
+//   "pathology",
+//   "pediatric-medicine-anesthesia",
+//   "reconstruction",
+//   "tmj",
+//   "trauma"
+// ];
+
+
+
+
+class DeckConfig {
+  low: boolean = true;
+  medium: boolean = true;
+  high: boolean = true;
+  type: "all" | "uncompleted" = "all";
+  topics: string[] = []; 
+
+  constructor() {
+    this.reset();
+  }
+
+  private parseBoolean(value: string | null): boolean {
+    if (!value) return false;
+    const val = value.toLowerCase();
+    return !(val === "false" || val === "0" || val === "no" || val === "off");
+  }
+
+  reset() {
+    this.low = true;
+    this.medium = true;
+    this.high = true;
+    this.type = "all"; 
+  }
+
+  loadFromQueryString() {
+    const params = new URLSearchParams(window.location.search);
+
+    const low = params.get("low");
+    if (low !== null) this.low = this.parseBoolean(low);
+
+    const medium = params.get("medium");
+    if (medium !== null) this.medium = this.parseBoolean(medium);
+
+    const high = params.get("high");
+    if (high !== null) this.high = this.parseBoolean(high);
+
+    params.delete("low"); 
+    params.delete("medium"); 
+    params.delete("high"); 
+
+    const typeParam = params.get("type");
+    if (typeParam === "all" || typeParam === "uncompleted") {
+      this.type = typeParam;
+    }
+
+    params.delete("type"); 
+
+
+//     // Check each topic
+//     FlashcardTopics.forEach(topic => {
+//       if (params.get(topic) === "on") {
+// //        console.log(`Enabled: ${topic}`);   
+//         this.addTopic(topic); 
+//       }
+//     });
+
+    params.forEach((value, key) => {
+      if (value === "on") {
+  //      this.addTopic(key);
+        this.topics.push(key);
+      }
+    });
+
+
+  }
+
+
+  getTopics(): string[] {
+    return [...this.topics];
+  }
+
+
+}
+
+
+
+
+    // // Parse query params from current URL
+    // const params = new URLSearchParams(window.location.search);
+
+
+
+
+
+
+
+
+
+
 
 
 
 type StatUpdateHandler = (name: string, value: string) => void; 
 
+interface DeckConfig {
+  low: boolean;
+  medium: boolean;
+  high: boolean;
+  type: "all" | "uncompleted";
+}
 
 
 export class FlashcardDeckComponent implements IModule {
@@ -56,9 +155,9 @@ export class FlashcardDeckComponent implements IModule {
   user!: User; 
 //  memberstack: MemberStack = new MemberStack(); 
 
+  config: DeckConfig;
 
   elem: HTMLElement;
-  private topics: string[] = [];
 
   cards: FlashcardComponent[] = []; 
 
@@ -87,6 +186,9 @@ export class FlashcardDeckComponent implements IModule {
     this.elem = elem; 
     this.statHandler = statHandler;
 
+    this.config = new DeckConfig(); 
+    this.config.loadFromQueryString(); 
+
     console.log("saving stat handler", statHandler)
   }
 
@@ -102,6 +204,11 @@ export class FlashcardDeckComponent implements IModule {
 
 
     console.log("Flashcard Deck")
+
+
+    /**
+     * Retrieve User Data 
+     */
 
     this.user = await User.create();
 
@@ -143,6 +250,8 @@ export class FlashcardDeckComponent implements IModule {
 
 
 
+
+
     const sa5: any = window['sa5' as any];
 
     // Clean dynlist DIVs 
@@ -154,16 +263,36 @@ export class FlashcardDeckComponent implements IModule {
 
 
 
-    // Parse query params from current URL
-    const params = new URLSearchParams(window.location.search);
 
-    // Check each topic
-    FlashcardTopics.forEach(topic => {
-      if (params.get(topic) === "on") {
-//        console.log(`Enabled: ${topic}`);
-        this.addTopic(topic); 
-      }
-    });
+    // this.config = new DeckConfig(); 
+    // this.config.loadFromQueryString(); 
+
+
+//     // Parse query params from current URL
+//     const params = new URLSearchParams(window.location.search);
+
+
+// params.delete("type"); 
+
+// params.delete("low"); 
+// params.delete("medium"); 
+// params.delete("high"); 
+
+// type=all&low=on&medium=on&high=on
+
+
+
+//     // Check each topic
+//     FlashcardTopics.forEach(topic => {
+//       if (params.get(topic) === "on") {
+// //        console.log(`Enabled: ${topic}`);   
+//         this.addTopic(topic); 
+//       }
+//     });
+
+
+
+
 
 //    this.initDeck(); 
 
@@ -196,11 +325,33 @@ export class FlashcardDeckComponent implements IModule {
         child.remove(); // remove if not matching
         return;
       }
-      if (!this.topics.includes(category)) {
+      if (!this.config.topics.includes(category)) {
         console.log("  removing (category mismatch)")
         child.remove(); // remove if not matching
         return;
       }
+
+
+      // Check type all or uncompleted 
+      switch(this.config.type) {
+        case "all":
+
+          // do nothing 
+
+          break;
+        case "uncompleted":
+
+          // Check to see if a freq was previously assigned 
+          const freq = this.user?.data?.cards?.[card.id]?.f;
+          if(freq) {
+            console.log("  Removing card completed before, freq", freq)
+            child.remove(); 
+            return; 
+          } 
+
+          break;
+      }
+
 
       // Check timestamp 
       const d = this.user?.data?.cards?.[card.id]?.d;
@@ -369,7 +520,7 @@ this.updateStat("remain", (this.cards.length - this.cardNum + 1).toString());
 
   updateStat(name: string, value: string) {
 
-console.log("updating stat", name, value, this.statHandler)
+    console.log("updating stat", name, value, this.statHandler)
 
     this.statHandler?.(name, value);
   }
@@ -398,17 +549,6 @@ console.log("updating stat", name, value, this.statHandler)
 
     this.cards[num - 1].elem.style.display = "block"; 
 
-  }
-
-  addTopic(topic: string) {
-    if (FlashcardTopics.includes(topic) && !this.topics.includes(topic)) {
-      this.topics.push(topic);
-      console.log(`Topic added: ${topic}`);
-    }
-  }
-
-  getTopics(): string[] {
-    return [...this.topics];
   }
 
 }

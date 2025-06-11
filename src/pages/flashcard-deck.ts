@@ -4,7 +4,7 @@
  */
 
 import { IModule } from "@sygnal/sse";
-import { FlashcardDeckComponent, FlashcardTopics } from "../components/deck";
+import { FlashcardDeckComponent } from "../components/deck";
 import { MemberStack } from "../utils/memberstack";
 import { User } from "../utils/user";
 
@@ -30,7 +30,7 @@ export class FlashcardDeckPage implements IModule {
     console.log("Flashcard Deck")
 
     /**
-     * Install Deck Settings button 
+     * Init Deck Settings button 
      */
 
     const btn = document.getElementById('deck-settings');
@@ -85,7 +85,7 @@ export class FlashcardDeckPage implements IModule {
 
   setStats(name: string, value: string) {
 
-console.log("UPDATING STAT", name, value) 
+    console.log("UPDATING STAT", name, value) 
 
     // find text element with [app-stat=(name)] 
     // set innerText to value 
