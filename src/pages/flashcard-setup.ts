@@ -38,47 +38,10 @@ export class FlashcardPage implements IModule {
 
     console.log("Flashcard Setup")
 
-    // Load Data Categories 
-    const dataCategories = new Data("categories"); 
-    console.log("DATA-CATEGORIES", dataCategories) 
 
-    // Load Data Flashcards 
-    const dataFlashcards = new Data("flashcards"); 
-    console.log("DATA-FLASHCARDS", dataFlashcards) 
-
-    // Iterate, 
-    // count cards into categories 
-    dataFlashcards.forEach((key, dataObj, item) => {
-        console.log("Key:", key);
-        console.log("Data:", dataObj);
-
-        // Increment category item count 
-        dataCategories.getByKey(dataObj.category).cards++; 
-
-    });
-
-
-    // Iterate through categories 
-    // Display values 
-
-    const display = new Display();  
-
-    dataCategories.forEach((key, dataObj, item) => {
-        console.log("Key:", key);
-        console.log("Data:", dataObj);
-
-        display.show(key, "total", dataObj.cards); 
-
-    });
-
-
-
-
-
-// display value 
-
-
-
+    /**
+     * User login 
+     */
 
     this.user = await User.create();
 
@@ -92,12 +55,120 @@ export class FlashcardPage implements IModule {
     }
 
 
+    /**
+     * Load data 
+     */
+
+    // Load List of Categories 
+    const dataCategories = new Data("categories"); 
+//     console.log("DATA-CATEGORIES", dataCategories) 
+
+    // Load List of Flashcards 
+    const dataFlashcards = new Data("flashcards"); 
+//    console.log("DATA-FLASHCARDS", dataFlashcards) 
+
+
+
+
+
+
+    // Process user data 
+    // Get member JSON 
+    await this.user.loadData(); 
+
+    console.log("USER DATA", this.user.data);
+
+    Object.entries(this.user.data.cards).forEach(([key, card]) => {
+        console.log("KEY:", key);
+        console.log("CARD:", card); 
+
+//        this.user.
+
+      dataFlashcards.getByKey(key).f = (card as any).f;
+
+        // card.d;
+        // card.f;
+    });
+
+//    console.log("DATA-FLASHCARDS 2", dataFlashcards) 
+
+
+    // Iterate through Flashcards 
+    // count cards into category groups 
+    dataFlashcards.forEach((key, dataObj, item) => {
+        // console.log("Key:", key);
+        // console.log("Data:", dataObj);
+
+console.log("11", key, dataObj)
+
+        // Increment category item count 
+        dataCategories.getByKey(dataObj.category).cards++; 
+
+        switch(dataObj.f) {
+          case "l":
+
+console.log("Applying", dataObj.f, "to", dataObj.category)
+
+            dataCategories.getByKey(dataObj.category).low++;
+            break;
+          case "m":
+console.log("Applying", dataObj.f, "to", dataObj.category)
+            dataCategories.getByKey(dataObj.category).medium++;
+            break;
+          case "h":
+console.log("Applying", dataObj.f, "to", dataObj.category)
+            dataCategories.getByKey(dataObj.category).high++;
+            break;
+        }
+
+
+    });
+
+    // Iterate through Dategories 
+    // Display values 
+
+    const display = new Display();  
+
+    dataCategories.forEach((key, dataObj, item) => {
+        console.log("Key:", key);
+        console.log("Data:", dataObj);
+
+        display.show(key, "total", dataObj.cards); 
+
+        display.show(key, "low", dataObj.low); 
+        display.forEach(key, "low", (elem) => { 
+            elem.setAttribute("val", dataObj.low); 
+        });
+
+        display.show(key, "medium", dataObj.medium); 
+        display.forEach(key, "medium", (elem) => { 
+            elem.setAttribute("val", dataObj.medium); 
+        });
+
+        display.show(key, "high", dataObj.high); 
+        display.forEach(key, "high", (elem) => { 
+            elem.setAttribute("val", dataObj.high); 
+        });
+
+    });
+
+
+
+
+// display value 
+
+
+
+    /**
+     * Form validation 
+     */
+
     // Setup validation on checkboxes 
     const form = document.querySelector('form#setup-form');
     const categoryFieldset = document.getElementById('categorys') as HTMLFieldSetElement;
 
     if(!form)
-      console.error("cannot find form.")
+      console.error("cannot find form.");  
 
     form?.addEventListener('submit', (e) => {
       const checkboxes = categoryFieldset.querySelectorAll('input[type="checkbox"]');
