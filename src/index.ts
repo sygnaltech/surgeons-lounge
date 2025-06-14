@@ -17,6 +17,8 @@ import { ComponentManager } from "./engine/component-manager";
 import { TestComponent } from "./components/test";
 import { FlashcardComponent } from "./components/flashcard";
 import { FlashcardDeckComponent } from "./components/deck";
+// import type MemberstackTypes from "@memberstack/dom";
+
 
 interface SiteGlobalDataType {
     // Define properties and their types for SiteDataType
@@ -43,6 +45,12 @@ declare global {
 
         // Site global data
         Site: SiteGlobalDataType;
+
+        // $memberstackDom: {
+        // getCurrentMember: () => Promise<MemberstackTypes.member | null>;
+        // openModal: (type: string, params?: object) => Promise<any>;
+        // // add other methods as needed
+        // };
 
         Webflow: {
             require: (module: string) => {
@@ -95,12 +103,12 @@ const exec = () => {
                     break;
                 case 'flashcard':
  
-                    (new FlashcardComponent(element)).exec();
+//                    (new FlashcardComponent(element)).exec();
 
                     break;
                 case 'deck':
  
-                    (new FlashcardDeckComponent(element)).exec();
+//                    (new FlashcardDeckComponent(element)).exec();
 
                     break;
                 default:
