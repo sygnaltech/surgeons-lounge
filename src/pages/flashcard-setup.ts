@@ -13,7 +13,7 @@ import { Display } from "../utils/display";
 
 const memberstack = memberstackDOM.init(
   {
-    publicKey: "pk_4c3139f988f49cf84e09", // "app_clv5nzj1400cy0sw1629ihb5o",
+    publicKey: "pk_4c3139f988f49cf84e09",
     useCookies: true  
   }
 );
@@ -38,11 +38,15 @@ export class FlashcardPage implements IModule {
 
     console.log("Flashcard Setup")
 
+    /**
+     * Initialize form 
+     */
 
-const radio = document.querySelector<HTMLInputElement>('input[type="radio"][name="type"][value="all"]');
-if (radio) {
-    radio.checked = true;
-}
+    // Select All cards radio button 
+    const radio = document.querySelector<HTMLInputElement>('input[type="radio"][name="type"][value="all"]');
+    if (radio) {
+        radio.checked = true;
+    }
 
 
 
@@ -54,9 +58,18 @@ if (radio) {
 
     if (this.user.loggedIn) { 
 
+//console.log("user", this.user)
+
       this.enableFlashcards(); 
 
     } else {
+
+      // Show login message
+      const elements = document.querySelectorAll('[app-message="login"]');
+      elements.forEach(elem => {
+        (elem as HTMLElement).style.display = 'block';
+      }); 
+      
       console.log("No user is logged in");
       return; 
     }
@@ -209,11 +222,15 @@ console.log("Applying", dataObj.f, "to", dataObj.category)
 
     if (fieldset) {
       fieldset.disabled = false;
+
       console.log("Flashcards enabled.");
     } else {
       console.warn("fieldset#deck-setup not found.");
     }
   }
+
+
+
 
 
 

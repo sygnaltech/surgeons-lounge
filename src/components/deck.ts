@@ -487,8 +487,8 @@ export class FlashcardDeckComponent implements IModule {
 //      this.user.data = this.user.
       await this.user.saveData();
 
-this.updateStat("total", this.cards.length.toString()); 
-this.updateStat("remain", (this.cards.length - this.cardNum + 1).toString()); 
+      this.updateStat("total", this.cards.length.toString()); 
+      this.updateStat("remain", (this.cards.length - this.cardNum + 1).toString()); 
 
       // flip to front 
       card.isFront = true; 
@@ -514,8 +514,6 @@ this.updateStat("remain", (this.cards.length - this.cardNum + 1).toString());
       this.onCardNext(card);
     });
 
-
-
   }
 
   updateStat(name: string, value: string) {
@@ -532,7 +530,16 @@ this.updateStat("remain", (this.cards.length - this.cardNum + 1).toString());
 
 
   private onCardNext(card: FlashcardComponent) {
-    // Deck-level logic goes here
+
+    console.log("NEXT CARD", this.cardNum, this.count);  
+
+    // Are we at the last card?
+    if (this.cardNum >= this.count) {
+      window.location.href = "/flashcards"; 
+      alert("Done!\nReturn to the settings screen to review stats\nand choose new settings."); 
+    }
+
+    // Advance to the next card 
     this.cardNum++; 
   }
 

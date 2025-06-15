@@ -16,7 +16,17 @@ export class User {
     }
 
     get loggedIn(): boolean {
-        return !!this._user;
+
+        if(!this.user)
+            return false; 
+
+        // https://docs.memberstack.com/hc/en-us/articles/8517501248539-Check-if-a-Member-is-Logged-in-or-Logged-out 
+        if(!this.user.data)
+            return false; 
+
+        return true;
+
+//        return !!this._user;
     }
 
     private constructor(memberstack: MemberStack, user: any) {
