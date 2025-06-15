@@ -158,6 +158,8 @@ export class FlashcardDeckComponent implements IModule {
   config: DeckConfig;
 
   elem: HTMLElement;
+  elemCardsWrap: HTMLElement; 
+  elemLoadingMessage: HTMLElement; 
 
   cards: FlashcardComponent[] = []; 
 
@@ -184,6 +186,20 @@ export class FlashcardDeckComponent implements IModule {
 
   constructor(elem: HTMLElement, statHandler?: StatUpdateHandler) {
     this.elem = elem; 
+
+    if(!this.elem) {
+      console.error("Unable to create component from a null element."); 
+    }
+
+    this.elemCardsWrap = elem.querySelector("[component-part='cards']")!; 
+    this.elemLoadingMessage = elem.querySelector("[component-part='loading-message']")!; 
+    if(!this.elemCardsWrap) {
+      console.error("Cards sub-component not found."); 
+    }
+    if(!this.elemLoadingMessage) {
+      console.error("Loading message sub-component not found."); 
+    }
+
     this.statHandler = statHandler;
 
     this.config = new DeckConfig(); 
@@ -255,7 +271,7 @@ export class FlashcardDeckComponent implements IModule {
     const sa5: any = window['sa5' as any];
 
     // Clean dynlist DIVs 
-    const nodesToUnwrap = this.elem.querySelectorAll<HTMLElement>(
+    const nodesToUnwrap = this.elemCardsWrap.querySelectorAll<HTMLElement>(
       'div.w-dyn-item, div.w-dyn-items, div.w-dyn-list'
     );
 
@@ -297,7 +313,7 @@ export class FlashcardDeckComponent implements IModule {
 //    this.initDeck(); 
 
     // Random sort 
-    HtmlUtils.randomSort(this.elem);
+    HtmlUtils.randomSort(this.elemCardsWrap);
 
 
   // this.user.data = {};
@@ -305,9 +321,9 @@ export class FlashcardDeckComponent implements IModule {
 
     // Iterate through the children of this.elem
     // Remove elements whose [app-card-category] is not in this.topics
-    const children = Array.from(this.elem.children) as HTMLElement[];
+    const children = Array.from(this.elemCardsWrap.children) as HTMLElement[];
 
-    console.log("STARTING CARDS", this.elem.children.length); 
+    console.log("STARTING CARDS", this.elemCardsWrap.children.length); 
 
     children.forEach(child => {
 
@@ -404,6 +420,8 @@ export class FlashcardDeckComponent implements IModule {
       card.exec(); // init 
 
 
+
+
       
 
     });
@@ -417,6 +435,7 @@ export class FlashcardDeckComponent implements IModule {
 
 
     // Show 1st card 
+    console.log("Showing first card.")
     this.showCard(1); 
 
 
@@ -514,6 +533,21 @@ export class FlashcardDeckComponent implements IModule {
       this.onCardNext(card);
     });
 
+
+    /**
+     * Activate UI 
+     */
+
+    console.log("Done, activating UI.")
+
+    // Hide message
+    // [app-message="loading"] 
+    this.elemLoadingMessage.style.display = 'none'; 
+
+    // Show desk
+    // [component-part="cards"] 
+    this.elemCardsWrap.style.display = 'block';
+
   }
 
   updateStat(name: string, value: string) {
@@ -553,6 +587,11 @@ export class FlashcardDeckComponent implements IModule {
       card.elem.style.display = "none";
         
     });
+
+    if(!this.cards[num - 1]) {
+      console.error("Unable to show card", num, "does not exist");
+      return;
+    }
 
     this.cards[num - 1].elem.style.display = "block"; 
 

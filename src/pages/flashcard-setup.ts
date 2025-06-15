@@ -96,22 +96,25 @@ export class FlashcardPage implements IModule {
     // Get member JSON 
     await this.user.loadData(); 
 
-    console.log("USER DATA", this.user.data);
+    console.log("USER DATA", this.user.data); 
 
-    Object.entries(this.user.data.cards).forEach(([key, card]) => {
-        console.log("KEY:", key);
-        console.log("CARD:", card); 
+    if(this.user.data.cards) {
 
-//        this.user.
+      Object.entries(this.user.data.cards).forEach(([key, card]) => {
+          console.log("KEY:", key);
+          console.log("CARD:", card); 
 
-      dataFlashcards.getByKey(key).f = (card as any).f;
+  //        this.user.
 
-        // card.d;
-        // card.f;
-    });
+        dataFlashcards.getByKey(key).f = (card as any).f;
+
+          // card.d;
+          // card.f;
+      });
+
+    }
 
 //    console.log("DATA-FLASHCARDS 2", dataFlashcards) 
-
 
     // Iterate through Flashcards 
     // count cards into category groups 
@@ -119,28 +122,25 @@ export class FlashcardPage implements IModule {
         // console.log("Key:", key);
         // console.log("Data:", dataObj);
 
-console.log("11", key, dataObj)
+        console.log("11", key, dataObj)
 
         // Increment category item count 
         dataCategories.getByKey(dataObj.category).cards++; 
 
         switch(dataObj.f) {
           case "l":
-
-console.log("Applying", dataObj.f, "to", dataObj.category)
-
+            console.log("Applying", dataObj.f, "to", dataObj.category)
             dataCategories.getByKey(dataObj.category).low++;
             break;
           case "m":
-console.log("Applying", dataObj.f, "to", dataObj.category)
+            console.log("Applying", dataObj.f, "to", dataObj.category)
             dataCategories.getByKey(dataObj.category).medium++;
             break;
           case "h":
-console.log("Applying", dataObj.f, "to", dataObj.category)
+            console.log("Applying", dataObj.f, "to", dataObj.category)
             dataCategories.getByKey(dataObj.category).high++;
             break;
         }
-
 
     });
 
@@ -209,6 +209,8 @@ console.log("Applying", dataObj.f, "to", dataObj.category)
         console.log('User confirmed clear data');
 
         this.user.clearData(); 
+        window.location.reload(); 
+//        window.location.href = "/flashcards"; 
 
       }
     });
