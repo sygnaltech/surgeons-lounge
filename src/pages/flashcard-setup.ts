@@ -104,12 +104,14 @@ export class FlashcardPage implements IModule {
           console.log("KEY:", key);
           console.log("CARD:", card); 
 
-  //        this.user.
+          // Verify card exists by key 
+          if(!dataFlashcards.getByKey(key)) {
+            console.error("Unable to get card key", key);
+            return; 
+          }
 
-        dataFlashcards.getByKey(key).f = (card as any).f;
+          dataFlashcards.getByKey(key)!.f = (card as any).f;
 
-          // card.d;
-          // card.f;
       });
 
     }
