@@ -19,7 +19,8 @@ export class DataPage implements IModule {
 
   async exec() { 
 
-    WebflowCollectionList.initAll(); 
+    const lists = WebflowCollectionList.initAll();
+    lists[0].depaginate(); // or .depaginate(5) to limit to 5 pages
 
   }
 
