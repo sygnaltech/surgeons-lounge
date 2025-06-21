@@ -58,6 +58,10 @@ export class FlashcardComponent implements IModule {
       actionElem.addEventListener('click', (e) => {
         switch (action) { 
 
+          case 'settings': 
+            this.handleSettings(); 
+            break;
+
           // Navigation 
           case 'prev':
             this.handlePrev();
@@ -98,6 +102,30 @@ export class FlashcardComponent implements IModule {
         freq: freq, 
       }
     }));
+
+  }
+
+  handleSettings(): void { 
+
+console.log("settings clicked.")
+
+    // Emit custom event
+    this.elem.dispatchEvent(new CustomEvent("flashcard:settings", {
+      bubbles: true, // so it can bubble up to the deck
+      detail: {
+        card: this
+      }
+    }));
+
+    // const btn = document.getElementById('deck-settings');
+    // btn?.addEventListener('click', (e) => {
+    //   e.preventDefault(); // Stop the default navigation
+
+    //   if (confirm('Leaving this view will restart your deck, are you sure?')) {
+    //     const href = (btn as HTMLAnchorElement).href;
+    //     window.location.href = href; // Manually navigate
+    //   }
+    // });
 
   }
 

@@ -517,6 +517,19 @@ export class FlashcardDeckComponent implements IModule {
 
     });
 
+    this.elem.addEventListener("flashcard:settings", (e: Event) => {
+      const customEvent = e as CustomEvent<{ card: FlashcardComponent }>;
+      const card = customEvent.detail.card;
+      
+      if (confirm('Leaving this view will restart your deck, are you sure?')) {
+        window.location.href = "/flashcards"; // Manually navigate
+      }
+
+
+      console.log("Card settings:", card);
+      this.onCardPrev(card);
+    });
+
     this.elem.addEventListener("flashcard:prev", (e: Event) => {
       const customEvent = e as CustomEvent<{ card: FlashcardComponent }>;
       const card = customEvent.detail.card;
