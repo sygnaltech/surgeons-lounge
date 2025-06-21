@@ -81,10 +81,15 @@ export class FlashcardPage implements IModule {
 
     // Load List of Categories 
     const dataCategories = new Data("categories"); 
-//     console.log("DATA-CATEGORIES", dataCategories) 
+    dataCategories.forEach((key, dataObj, item) => {
+        console.log('Category:', key);
+    });
 
     // Load List of Flashcards 
     const dataFlashcards = new Data("flashcards"); 
+    dataFlashcards.forEach((key, dataObj, item) => {
+        console.log('Card:', key, dataObj.category);
+    });
 //    console.log("DATA-FLASHCARDS", dataFlashcards) 
 
 
@@ -96,13 +101,13 @@ export class FlashcardPage implements IModule {
     // Get member JSON 
     await this.user.loadData(); 
 
-    console.log("USER DATA", this.user.data); 
+//    console.log("USER DATA", this.user.data); 
 
     if(this.user.data.cards) {
 
       Object.entries(this.user.data.cards).forEach(([key, card]) => {
-          console.log("KEY:", key);
-          console.log("CARD:", card); 
+          // console.log("KEY:", key);
+          // console.log("CARD:", card); 
 
           // Verify card exists by key 
           if(!dataFlashcards.getByKey(key)) {
@@ -124,7 +129,7 @@ export class FlashcardPage implements IModule {
         // console.log("Key:", key);
         // console.log("Data:", dataObj);
 
-        console.log("11", key, dataObj)
+//        console.log("11", key, dataObj)
 
         // Increment category item count 
         dataCategories.getByKey(dataObj.category).cards++; 
@@ -151,9 +156,11 @@ export class FlashcardPage implements IModule {
 
     const display = new Display();  
 
+//console.log(display.); 
+
     dataCategories.forEach((key, dataObj, item) => {
-        console.log("Key:", key);
-        console.log("Data:", dataObj);
+//        console.log("Key:", key); 
+//        console.log("Data:", dataObj);
 
         display.show(key, "total", dataObj.cards); 
 
