@@ -74,6 +74,13 @@ export class Data {
         return this.items;
     }
 
+    toString(): string {
+        return this.items.map(item => {
+            return `${item.key}: ${JSON.stringify(item.data, null, 2)}`;
+        }).join('\n\n');
+    }
+
+
 }
 
 

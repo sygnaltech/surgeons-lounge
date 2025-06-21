@@ -56,8 +56,12 @@ export class User {
 
     async clearData() {
 
+console.log(this.data)
+
         this.data = {};
-        this.saveData(); 
+        await this.saveData(); 
+
+        console.log(this.data)
         
         console.log(
             '%cUSER DATA CLEARED',

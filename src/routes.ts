@@ -16,6 +16,7 @@ import { Site } from "./site";
 import { FlashcardPage } from "./pages/flashcard-setup";
 import { FlashcardDeckPage } from "./pages/flashcard-deck";
 import { TestPage } from "./pages/test";
+import { DataPage } from "./pages/data";
 
 export const routeDispatcher = (): RouteDispatcher => {
     
@@ -26,9 +27,10 @@ export const routeDispatcher = (): RouteDispatcher => {
         '/': HomePage,
         '/flashcards': FlashcardPage,
         '/deck': FlashcardDeckPage,
-        '/test': TestPage,
 
         // TEST Pages
+        '/test': TestPage,
+        '/data': DataPage,
 
     };
 
