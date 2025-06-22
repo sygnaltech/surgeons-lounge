@@ -75,6 +75,11 @@ export class FlashcardPage implements IModule {
     }
 
 
+
+    this.initUX(); 
+
+
+
     /**
      * Load data 
      */
@@ -186,7 +191,9 @@ export class FlashcardPage implements IModule {
 
 // display value 
 
+  }
 
+  initUX() {
 
     /**
      * Form validation 
@@ -213,11 +220,14 @@ export class FlashcardPage implements IModule {
 
     // Setup Clear button 
     const btn = document.getElementById('btn-clear-data');
-    btn?.addEventListener('click', () => {
+    btn?.addEventListener('click', async () => {
       if (confirm('Are you sure?')) {
         console.log('User confirmed clear data');
 
-        this.user.clearData(); 
+        await this.user.clearData(); 
+
+alert("User data cleared.");
+
         window.location.reload(); 
 //        window.location.href = "/flashcards"; 
 
@@ -227,6 +237,11 @@ export class FlashcardPage implements IModule {
 
 
   } 
+
+
+
+
+
 
   enableFlashcards() {
     const fieldset = document.getElementById("deck-setup") as HTMLFieldSetElement | null;
