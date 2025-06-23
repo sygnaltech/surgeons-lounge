@@ -521,9 +521,7 @@ export class FlashcardDeckComponent implements IModule {
       const customEvent = e as CustomEvent<{ card: FlashcardComponent }>;
       const card = customEvent.detail.card;
       
-      if (confirm('Leaving this view will restart your deck, are you sure?')) {
-        window.location.href = "/flashcards"; // Manually navigate
-      }
+      window.location.href = "/flashcards"; // Manually navigate
 
 
       console.log("Card settings:", card);

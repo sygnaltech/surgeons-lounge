@@ -1,6 +1,7 @@
 
 /*
  * Page | Flashcard Setup 
+ * 
  */
 
 import { IModule } from "@sygnal/sse";
@@ -36,19 +37,11 @@ export class FlashcardPage implements IModule {
 
   async exec() {
 
-    console.log("Flashcard Setup")
-
     /**
-     * Initialize form 
+     * Initialize UX 
      */
 
-    // Select All cards radio button 
-    const radio = document.querySelector<HTMLInputElement>('input[type="radio"][name="type"][value="all"]');
-    if (radio) {
-        radio.checked = true;
-    }
-
-
+    this.initUX(); 
 
     /**
      * User login 
@@ -58,9 +51,10 @@ export class FlashcardPage implements IModule {
 
     if (this.user.loggedIn) { 
 
-//console.log("user", this.user)
+      // console.log("user", this.user)
 
-      this.enableFlashcards(); 
+      // Enable page 
+      this.enablePage(); 
 
     } else {
 
@@ -74,28 +68,36 @@ export class FlashcardPage implements IModule {
       return; 
     }
 
+    /**
+     * Load Data 
+     */
+    
+    await this.loadData(); 
 
+  }
 
-    this.initUX(); 
+  /**
+   * Load data into the Page. 
+   */
 
+  async loadData() {
 
 
     /**
-     * Load data 
+     * Load data from data structures 
      */
 
     // Load List of Categories 
     const dataCategories = new Data("categories"); 
-    dataCategories.forEach((key, dataObj, item) => {
-        console.log('Category:', key);
-    });
+    // dataCategories.forEach((key, dataObj, item) => {
+    //     console.log('Category:', key);
+    // });
 
     // Load List of Flashcards 
     const dataFlashcards = new Data("flashcards"); 
-    dataFlashcards.forEach((key, dataObj, item) => {
-        console.log('Card:', key, dataObj.category);
-    });
-//    console.log("DATA-FLASHCARDS", dataFlashcards) 
+    // dataFlashcards.forEach((key, dataObj, item) => {
+    //     console.log('Card:', key, dataObj.category);
+    // });
 
 
 
@@ -141,15 +143,15 @@ export class FlashcardPage implements IModule {
 
         switch(dataObj.f) {
           case "l":
-            console.log("Applying", dataObj.f, "to", dataObj.category)
+//            console.log("Applying", dataObj.f, "to", dataObj.category)
             dataCategories.getByKey(dataObj.category).low++;
             break;
           case "m":
-            console.log("Applying", dataObj.f, "to", dataObj.category)
+//            console.log("Applying", dataObj.f, "to", dataObj.category)
             dataCategories.getByKey(dataObj.category).medium++;
             break;
           case "h":
-            console.log("Applying", dataObj.f, "to", dataObj.category)
+//            console.log("Applying", dataObj.f, "to", dataObj.category)
             dataCategories.getByKey(dataObj.category).high++;
             break;
         }
@@ -161,11 +163,7 @@ export class FlashcardPage implements IModule {
 
     const display = new Display();  
 
-//console.log(display.); 
-
     dataCategories.forEach((key, dataObj, item) => {
-//        console.log("Key:", key); 
-//        console.log("Data:", dataObj);
 
         display.show(key, "total", dataObj.cards); 
 
@@ -196,27 +194,15 @@ export class FlashcardPage implements IModule {
   initUX() {
 
     /**
-     * Form validation 
+     * Init Settings UI 
      */
 
-    // Setup validation on checkboxes 
-    const form = document.querySelector('form#setup-form');
-    const categoryFieldset = document.getElementById('categorys') as HTMLFieldSetElement;
-
-    if(!form)
-      console.error("cannot find form.");  
-
-    form?.addEventListener('submit', (e) => {
-      const checkboxes = categoryFieldset.querySelectorAll('input[type="checkbox"]');
-      const oneChecked = Array.from(checkboxes).some(cb => (cb as HTMLInputElement).checked);
-
-      if (!oneChecked) {
-        e.preventDefault();
-        alert('Please select at least one category.');
-      }
-    });
-
-
+    // Filter Questions 
+    // Select All radio button 
+    const radio = document.querySelector<HTMLInputElement>('input[type="radio"][name="type"][value="all"]');
+    if (radio) {
+        radio.checked = true;
+    }
 
     // Setup Clear button 
     const btn = document.getElementById('btn-clear-data');
@@ -226,24 +212,62 @@ export class FlashcardPage implements IModule {
 
         await this.user.clearData(); 
 
-alert("User data cleared.");
+        // Show message, this is important to
+        // give the clear command time to execute before refresh 
+        alert("User data cleared.");
 
         window.location.reload(); 
-//        window.location.href = "/flashcards"; 
 
       }
     });
 
 
+    /**
+     * Form validation 
+     */
+
+    // Get form 
+    const form = document.querySelector('form#setup-form') as HTMLFormElement | null;
+    if(!form) {
+      console.error("cannot find form.");  
+      return; 
+    }
+
+    form?.addEventListener('submit', (e) => {
+
+      // Validate checkboxes 
+      const categoryFieldset = document.getElementById('categorys') as HTMLFieldSetElement; 
+      const checkboxes = categoryFieldset.querySelectorAll('input[type="checkbox"]');
+      const oneChecked = Array.from(checkboxes).some(cb => (cb as HTMLInputElement).checked);
+
+      if (!oneChecked) {
+        e.preventDefault();
+        alert('Please select at least one category.');
+      } 
+
+      // Ensure form is valid before submission 
+      if (!form.checkValidity()) {
+        console.log('Form is invalid');
+        return;
+      }
+
+      // Change submit button text 
+      const submitBtn = form.querySelector('input[type="submit"]') as HTMLInputElement | null;
+      if (submitBtn) {
+        submitBtn.value = 'Setting Up Deck...';
+      } 
+
+    });
 
   } 
 
 
 
+  /**
+   * Enable settings UI 
+   */
 
-
-
-  enableFlashcards() {
+  enablePage() {
     const fieldset = document.getElementById("deck-setup") as HTMLFieldSetElement | null;
 
     if (fieldset) {
@@ -253,32 +277,6 @@ alert("User data cleared.");
     } else {
       console.warn("fieldset#deck-setup not found.");
     }
-  }
-
-
-
-
-
-
-  initDeck() {
-
-    // Get config from querystring
-
-    // Remove unnecessary cards 
-
-    // Randomize 
-
-    // Reset and save localStorage 
-
-    /**
-     * Setup card 
-     */
-
-    // [card-action=flip] 
-    // [card-action=next] 
-    // [card-action=prev] 
-
-
   }
 
 }
