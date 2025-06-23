@@ -107,7 +107,7 @@ export class FlashcardComponent implements IModule {
 
   handleSettings(): void { 
 
-console.log("settings clicked.")
+// console.log("settings clicked.")
 
     // Emit custom event
     this.elem.dispatchEvent(new CustomEvent("flashcard:settings", {
