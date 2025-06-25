@@ -6,24 +6,27 @@
 
 
 import { IModule } from "@sygnal/sse";
+import { Sa5Switch } from "../engine/switch";
 
 
 export class FlashcardComponent implements IModule {
 
   elem: HTMLElement;
+  switch: Sa5Switch; 
 
   id: string = "";
   category: string = "";
 
   get isFront(): boolean {
-    const front = this.elem.querySelector<HTMLElement>('[component-part="front"]');
-    return front?.classList.contains('w--current') ?? false;
+    return this.switch.value === "front";
+    // const front = this.elem.querySelector<HTMLElement>('[component-part="front"]');
+    // return front?.classList.contains('w--current') ?? false;
   }
   set isFront(value: boolean) {
     if (value) {
-      this.clickPart('front');
+      this.switch.value = 'front';
     } else {
-      this.clickPart('back');
+      this.switch.value = 'back';
     }
   }
 
@@ -32,6 +35,9 @@ export class FlashcardComponent implements IModule {
   constructor(elem: HTMLElement) {
 
     this.elem = elem; 
+    this.switch = new Sa5Switch(elem); 
+    this.switch.value = 'front';
+
     this.id = this.elem.getAttribute("app-card-id") || "";
     this.category = this.elem.getAttribute("app-card-category") || "";
 
@@ -155,19 +161,20 @@ export class FlashcardComponent implements IModule {
 
   handleFlip(): void { 
 
+    console.log("flip")
     this.isFront ? this.isFront=false: this.isFront = true; 
 
   }
 
-  clickPart(name: string): void { 
+  // clickPart(name: string): void { 
 
-    const part = this.elem.querySelector<HTMLElement>(`[component-part="${name}"]`);
-    if (part) {
-      part.click();
-    } else {
-      console.warn(`No element found with component-part="${name}"`);
-    } 
+  //   const part = this.elem.querySelector<HTMLElement>(`[component-part="${name}"]`);
+  //   if (part) {
+  //     part.click();
+  //   } else {
+  //     console.warn(`No element found with component-part="${name}"`);
+  //   } 
 
-  }
+  // }
 
 }
