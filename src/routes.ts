@@ -27,6 +27,7 @@ export const routeDispatcher = (): RouteDispatcher => {
         '/': HomePage,
         '/flashcards': FlashcardPage,
         '/deck': FlashcardDeckPage,
+        '/deck2': FlashcardDeckPage,
 
         // TEST Pages
         '/test': TestPage,
