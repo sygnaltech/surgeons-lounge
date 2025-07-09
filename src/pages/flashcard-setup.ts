@@ -110,7 +110,7 @@ export class FlashcardPage implements IModule {
 
 //    console.log("USER DATA", this.user.data); 
 
-    if(this.user.data.cards) {
+    if(this.user?.data?.cards) {
 
       Object.entries(this.user.data.cards).forEach(([key, card]) => {
           // console.log("KEY:", key);

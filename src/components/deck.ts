@@ -482,6 +482,11 @@ export class FlashcardDeckComponent implements IModule {
 
       console.log("PRE-SAVE", JSON.stringify(this.user.data));
 
+      // Init if empty 
+      if (!this.user.data) {
+        this.user.data = {};
+      }
+
       this.user.data.v = 1; // version 1
       this.user.data.cards ??= {};
       this.user.data.cards[card.id] ??= {};
