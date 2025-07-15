@@ -160,6 +160,7 @@ export class FlashcardDeckComponent implements IModule {
   elem: HTMLElement;
   elemCardsWrap: HTMLElement; 
   elemLoadingMessage: HTMLElement; 
+  elemCompletedMessage: HTMLElement; 
 
   cards: FlashcardComponent[] = []; 
 
@@ -193,10 +194,14 @@ export class FlashcardDeckComponent implements IModule {
 
     this.elemCardsWrap = elem.querySelector("[component-part='cards']")!; 
     this.elemLoadingMessage = elem.querySelector("[component-part='loading-message']")!; 
+    this.elemCompletedMessage = elem.querySelector("[component-part='completed-message']")!; 
     if(!this.elemCardsWrap) {
       console.error("Cards sub-component not found."); 
     }
     if(!this.elemLoadingMessage) {
+      console.error("Loading message sub-component not found."); 
+    }
+    if(!this.elemCompletedMessage) {
       console.error("Loading message sub-component not found."); 
     }
 
@@ -559,6 +564,14 @@ export class FlashcardDeckComponent implements IModule {
     // Hide message
     // [app-message="loading"] 
     this.elemLoadingMessage.style.display = 'none'; 
+
+    // If there are no cards, show this 
+    if (this.cardNum >= this.count) {
+      this.elemCompletedMessage.style.display = 'block'; 
+//      window.location.href = "/flashcards"; 
+//      alert("Done!\nReturn to the settings screen to review stats\nand choose new settings."); 
+    }
+
 
     // Show desk
     // [component-part="cards"] 
