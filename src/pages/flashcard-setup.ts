@@ -243,6 +243,7 @@ export class FlashcardPage implements IModule {
       if (!oneChecked) {
         e.preventDefault();
         alert('Please select at least one category.');
+        return; 
       } 
 
       // Ensure form is valid before submission 
